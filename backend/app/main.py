@@ -12,6 +12,7 @@ from app.routes.naive_bayes import router as nb_router
 from app.models.jawaban_kuesioner import JawabanKuesioner
 from app.routes.kuesioner import router as kuesioner_router
 from app.routes.dashboard import router as dashboard_router
+from app.routes.dataset_training import router as dataset_router
 
 from app.models.user import User
 from app.models.siswa import Siswa
@@ -40,6 +41,7 @@ app.include_router(dataset_router)
 app.include_router(nb_router)
 app.include_router(kuesioner_router)
 app.include_router(dashboard_router)
+
 
 @app.get("/")
 def root():

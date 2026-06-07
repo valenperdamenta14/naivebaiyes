@@ -11,17 +11,22 @@ export default function DataKuesioner() {
 
   const getPending = async () => {
     try {
-      const res = await api.get("/kuesioner/pending");
+      const res = await api.get(
+        "/kuesioner/pending"
+      );
+
       setData(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const prosesNaiveBayes = async (siswaId) => {
+  const prosesNaiveBayes = async (
+    jawabanId
+  ) => {
     try {
       const res = await api.post(
-        `/naive-bayes/proses/${siswaId}`
+        `/naive-bayes/proses/${jawabanId}`
       );
 
       alert(res.data.message);
@@ -47,11 +52,15 @@ export default function DataKuesioner() {
             <thead className="bg-slate-100">
               <tr>
                 <th className="p-3 text-left">
-                  ID
+                  Nama
                 </th>
 
                 <th className="p-3 text-left">
-                  Siswa ID
+                  NISN
+                </th>
+
+                <th className="p-3 text-left">
+                  Kelas
                 </th>
 
                 <th className="p-3 text-left">
@@ -75,11 +84,15 @@ export default function DataKuesioner() {
                   className="border-t"
                 >
                   <td className="p-3">
-                    {item.id}
+                    {item.nama}
                   </td>
 
                   <td className="p-3">
-                    {item.siswa_id}
+                    {item.nisn}
+                  </td>
+
+                  <td className="p-3">
+                    {item.kelas}
                   </td>
 
                   <td className="p-3">
@@ -94,12 +107,12 @@ export default function DataKuesioner() {
                     <button
                       onClick={() =>
                         prosesNaiveBayes(
-                          item.siswa_id
+                          item.id
                         )
                       }
-                      className="bg-green-600 text-white px-4 py-2 rounded"
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                     >
-                      Proses Naive Bayes
+                      Proses
                     </button>
                   </td>
                 </tr>

@@ -18,33 +18,28 @@ router = APIRouter(
 )
 
 
-@router.post("/proses/{siswa_id}")
+@router.post("/proses/{jawaban_id}")
 def proses_naive_bayes(
-    siswa_id: int,
+    jawaban_id: int,
     db: Session = Depends(get_db)
 ):
-
-    siswa = db.query(
-        Siswa
-    ).filter(
-        Siswa.id == siswa_id
-    ).first()
-
-    if not siswa:
-        return {
-            "message": "Siswa tidak ditemukan"
-        }
 
     jawaban = db.query(
         JawabanKuesioner
     ).filter(
-        JawabanKuesioner.siswa_id == siswa_id
+        JawabanKuesioner.id == jawaban_id
     ).first()
 
     if not jawaban:
         return {
-            "message": "Kuesioner belum diisi"
+            "message": "Data kuesioner tidak ditemukan"
         }
+
+    siswa = db.query(
+        Siswa
+    ).filter(
+        Siswa.id == jawaban.siswa_id
+    ).first()
 
     dataset = db.query(
         DatasetTraining
@@ -58,12 +53,12 @@ def proses_naive_bayes(
     cek_hasil = db.query(
         HasilKlasifikasi
     ).filter(
-        HasilKlasifikasi.siswa_id == siswa.id
+        HasilKlasifikasi.jawaban_id == jawaban.id
     ).first()
 
     if cek_hasil:
         return {
-            "message": "Siswa sudah diproses"
+            "message": "Kuesioner sudah diproses"
         }
 
     hasil = hitung_naive_bayes(
@@ -73,7 +68,7 @@ def proses_naive_bayes(
     )
 
     simpan = HasilKlasifikasi(
-        siswa_id=siswa.id,
+        jawaban_id=jawaban.id,
         kategori_motivasi=jawaban.kategori_motivasi,
         kategori_kehadiran=siswa.kategori_kehadiran,
         hasil_prediksi=hasil["prediksi"],
@@ -99,21 +94,29 @@ def get_hasil(
 
     data = db.query(
         HasilKlasifikasi,
+        JawabanKuesioner,
         Siswa
     ).join(
+        JawabanKuesioner,
+        HasilKlasifikasi.jawaban_id ==
+        JawabanKuesioner.id
+    ).join(
         Siswa,
-        HasilKlasifikasi.siswa_id == Siswa.id
+        JawabanKuesioner.siswa_id ==
+        Siswa.id
     ).all()
 
     hasil = []
 
-    for item in data:
+    for row in data:
 
-        klasifikasi = item[0]
-        siswa = item[1]
+        klasifikasi = row[0]
+        jawaban = row[1]
+        siswa = row[2]
 
         hasil.append({
             "id": klasifikasi.id,
+            "jawaban_id": jawaban.id,
             "nama": siswa.nama,
             "nisn": siswa.nisn,
             "kelas": siswa.kelas,

@@ -30,18 +30,8 @@ def submit_kuesioner(
         return {
             "message": "Siswa tidak ditemukan"
         }
-
-    cek_kuesioner = db.query(
-        JawabanKuesioner
-    ).filter(
-        JawabanKuesioner.siswa_id == request.siswa_id
-    ).first()
-
-    if cek_kuesioner:
-        return {
-            "message": "Kuesioner sudah pernah diisi"
-        }
-
+    
+        
     total_intrinsik = (
         request.q1 +
         request.q2 +
@@ -130,19 +120,69 @@ def submit_kuesioner(
 def get_pending(
     db: Session = Depends(get_db)
 ):
-    return db.query(
-        JawabanKuesioner
+
+    hasil = db.query(
+        JawabanKuesioner,
+        Siswa
+    ).join(
+        Siswa,
+        JawabanKuesioner.siswa_id == Siswa.id
     ).filter(
         JawabanKuesioner.status == "pending"
     ).all()
+
+    data = []
+
+    for item in hasil:
+
+        jawaban = item[0]
+        siswa = item[1]
+
+        data.append({
+            "id": jawaban.id,
+            "siswa_id": siswa.id,
+            "nama": siswa.nama,
+            "kelas": siswa.kelas,
+            "nisn": siswa.nisn,
+            "total_score": jawaban.total_score,
+            "kategori_motivasi": jawaban.kategori_motivasi,
+            "status": jawaban.status
+        })
+
+    return data
 
 
 @router.get("/processed")
 def get_processed(
     db: Session = Depends(get_db)
 ):
-    return db.query(
-        JawabanKuesioner
+
+    hasil = db.query(
+        JawabanKuesioner,
+        Siswa
+    ).join(
+        Siswa,
+        JawabanKuesioner.siswa_id == Siswa.id
     ).filter(
         JawabanKuesioner.status == "processed"
     ).all()
+
+    data = []
+
+    for item in hasil:
+
+        jawaban = item[0]
+        siswa = item[1]
+
+        data.append({
+            "id": jawaban.id,
+            "siswa_id": siswa.id,
+            "nama": siswa.nama,
+            "kelas": siswa.kelas,
+            "nisn": siswa.nisn,
+            "total_score": jawaban.total_score,
+            "kategori_motivasi": jawaban.kategori_motivasi,
+            "status": jawaban.status
+        })
+
+    return data
