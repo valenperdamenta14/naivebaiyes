@@ -96,6 +96,35 @@ def proses_naive_bayes(
 def get_hasil(
     db: Session = Depends(get_db)
 ):
-    return db.query(
-        HasilKlasifikasi
+
+    data = db.query(
+        HasilKlasifikasi,
+        Siswa
+    ).join(
+        Siswa,
+        HasilKlasifikasi.siswa_id == Siswa.id
     ).all()
+
+    hasil = []
+
+    for item in data:
+
+        klasifikasi = item[0]
+        siswa = item[1]
+
+        hasil.append({
+            "id": klasifikasi.id,
+            "nama": siswa.nama,
+            "nisn": siswa.nisn,
+            "kelas": siswa.kelas,
+            "kategori_motivasi":
+                klasifikasi.kategori_motivasi,
+            "kategori_kehadiran":
+                klasifikasi.kategori_kehadiran,
+            "hasil_prediksi":
+                klasifikasi.hasil_prediksi,
+            "probabilitas":
+                klasifikasi.probabilitas
+        })
+
+    return hasil

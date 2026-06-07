@@ -68,11 +68,16 @@ async def import_siswa(
             User.username == nisn
         ).first()
 
+        cek_user = db.query(User).filter(
+            User.username == nisn
+        ).first()
+
         if not cek_user:
             user = User(
                 username=nisn,
                 password=hash_password(nisn),
-                role="siswa"
+                role="siswa",
+                siswa_id=siswa.id
             )
 
             db.add(user)
