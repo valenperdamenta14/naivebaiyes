@@ -11,7 +11,7 @@ from app.database import Base
 class Siswa(Base):
     __tablename__ = "siswa"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     nis = Column(String(50))
     nisn = Column(String(50))
