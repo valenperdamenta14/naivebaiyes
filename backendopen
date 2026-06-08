@@ -2,4 +2,10 @@ cd backend
 
 venv\Scripts\activate
 
-uvicorn main:app --reload
+uvicorn app.main:app --reload
+
+cd frontend
+npm run dev
+
+usn = admin
+pass = admin123
