@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import api from "../services/api";
+
 import {
   LayoutDashboard,
   Users,
@@ -55,7 +57,13 @@ export default function Sidebar() {
         </Link>
 
         <button
-          onClick={() => {
+          onClick={async () => {
+            try {
+              await api.post("/dataset/deactivate");
+            } catch (error) {
+              console.log(error);
+            }
+
             localStorage.clear();
             window.location.href = "/";
           }}

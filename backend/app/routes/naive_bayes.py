@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 
 from app.models.dataset_training import DatasetTraining
+from app.models.dataset_status import DatasetStatus
 from app.models.siswa import Siswa
 from app.models.hasil_klasifikasi import HasilKlasifikasi
 from app.models.jawaban_kuesioner import JawabanKuesioner
@@ -23,6 +25,16 @@ def proses_naive_bayes(
     jawaban_id: int,
     db: Session = Depends(get_db)
 ):
+    
+    status = db.query(
+        DatasetStatus
+    ).first()
+
+    if not status or status.status != "aktif":
+        raise HTTPException(
+            status_code=400,
+            detail="Upload dataset training terlebih dahulu"
+        )
 
     jawaban = db.query(
         JawabanKuesioner
@@ -31,9 +43,10 @@ def proses_naive_bayes(
     ).first()
 
     if not jawaban:
-        return {
-            "message": "Data kuesioner tidak ditemukan"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="Data kuesioner tidak ditemukan"
+        )
 
     siswa = db.query(
         Siswa
@@ -41,14 +54,21 @@ def proses_naive_bayes(
         Siswa.id == jawaban.siswa_id
     ).first()
 
+    if not siswa:
+        raise HTTPException(
+            status_code=404,
+            detail="Siswa tidak ditemukan"
+        )
+
     dataset = db.query(
         DatasetTraining
     ).all()
 
     if len(dataset) == 0:
-        return {
-            "message": "Dataset training kosong"
-        }
+        raise HTTPException(
+            status_code=400,
+            detail="Dataset training kosong"
+        )
 
     cek_hasil = db.query(
         HasilKlasifikasi
@@ -57,9 +77,10 @@ def proses_naive_bayes(
     ).first()
 
     if cek_hasil:
-        return {
-            "message": "Kuesioner sudah diproses"
-        }
+        raise HTTPException(
+            status_code=400,
+            detail="Kuesioner sudah diproses"
+        )
 
     hasil = hitung_naive_bayes(
         dataset,

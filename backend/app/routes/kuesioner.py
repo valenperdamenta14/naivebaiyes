@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import UploadFile
+from fastapi import File
 
 from sqlalchemy.orm import Session
 
@@ -9,12 +11,99 @@ from app.schemas.kuesioner_schema import KuesionerSchema
 
 from app.models.jawaban_kuesioner import JawabanKuesioner
 from app.models.siswa import Siswa
+from app.models.dataset_training import DatasetTraining
+from app.models.dataset_status import DatasetStatus
+
+import pandas as pd
 
 router = APIRouter(
     prefix="/kuesioner",
     tags=["Kuesioner"]
 )
 
+
+@router.post("/upload-dataset")
+async def upload_dataset(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+
+    df = pd.read_excel(file.file)
+
+    db.query(DatasetTraining).delete()
+
+    total = 0
+
+    for _, row in df.iterrows():
+
+        data = DatasetTraining(
+            kategori_motivasi=str(
+                row["Kategori Motivasi"]
+            ),
+            kategori_kehadiran=str(
+                row["Kategori Kehadiran"]
+            ),
+            kategori_prestasi=str(
+                row["Kategori Prestasi"]
+            )
+        )
+
+        db.add(data)
+
+        total += 1
+
+    status = db.query(
+        DatasetStatus
+    ).first()
+
+    if status:
+
+        status.nama_file = file.filename
+        status.jumlah_data = total
+        status.status = "aktif"
+
+    else:
+
+        status = DatasetStatus(
+            nama_file=file.filename,
+            jumlah_data=total,
+            status="aktif"
+        )
+
+        db.add(status)
+
+    db.commit()
+
+    return {
+        "message": f"{total} data training berhasil diupload",
+        "jumlah_data": total,
+        "status": "aktif"
+    }
+
+
+@router.get("/dataset-status")
+def dataset_status(
+    db: Session = Depends(get_db)
+):
+
+    status = db.query(
+        DatasetStatus
+    ).first()
+
+    if not status:
+
+        return {
+            "status": "nonaktif",
+            "jumlah_data": 0,
+            "nama_file": None
+        }
+
+    return {
+        "status": status.status,
+        "jumlah_data": status.jumlah_data,
+        "nama_file": status.nama_file,
+        "uploaded_at": status.uploaded_at
+    }
 
 @router.post("/submit")
 def submit_kuesioner(

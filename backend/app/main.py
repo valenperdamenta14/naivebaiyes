@@ -6,6 +6,7 @@ from app.database import engine
 
 from app.routes.auth import router as auth_router
 from app.routes.siswa import router as siswa_router
+from app.models.dataset_status import DatasetStatus
 from app.routes.dataset import router as dataset_router
 from app.models.hasil_klasifikasi import HasilKlasifikasi
 from app.routes.naive_bayes import router as nb_router

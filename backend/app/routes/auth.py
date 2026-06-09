@@ -8,6 +8,7 @@ from app.database import get_db
 
 from app.models.user import User
 from app.models.siswa import Siswa
+from app.models.dataset_status import DatasetStatus
 
 from app.schemas.auth_schema import LoginSchema
 from app.schemas.auth_schema import LoginSiswaSchema
@@ -127,3 +128,25 @@ def me(
             data["kategori_kehadiran"] = siswa.kategori_kehadiran
 
     return data
+
+@router.post("/logout")
+def logout(
+    db: Session = Depends(get_db)
+):
+
+    status = db.query(
+        DatasetStatus
+    ).first()
+
+    if status:
+        status.status = "nonaktif"
+
+        status.nama_file = None
+
+        status.jumlah_data = 0
+
+        db.commit()
+
+    return {
+        "message": "Logout berhasil"
+    }

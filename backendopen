@@ -8,4 +8,4 @@ cd frontend
 npm run dev
 
 usn = admin
-pass = admin123
+pass = admin123 

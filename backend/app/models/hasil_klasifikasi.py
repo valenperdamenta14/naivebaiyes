@@ -20,7 +20,8 @@ class HasilKlasifikasi(Base):
 
     jawaban_id = Column(
         Integer,
-        ForeignKey("jawaban_kuesioner.id")
+        ForeignKey("jawaban_kuesioner.id"),
+        unique=True
     )
 
     kategori_motivasi = Column(
