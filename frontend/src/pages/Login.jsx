@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  User,
+  GraduationCap,
+  Lock,
+  School,
+} from "lucide-react";
 
 import api from "../services/api";
+import logo from "../assets/logotutwuri.jpeg";
 
 export default function Login() {
   const [mode, setMode] = useState("admin");
@@ -17,32 +24,15 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      const res = await api.post("/auth/login", {
+        username,
+        password,
+      });
 
-      const res = await api.post(
-        "/auth/login",
-        {
-          username,
-          password,
-        }
-      );
-
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
-
-      localStorage.setItem(
-        "role",
-        res.data.role
-      );
-
-      localStorage.setItem(
-        "role",
-        res.data.role
-      );
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
 
       navigate("/admin");
-
     } catch (err) {
       alert("Login guru gagal");
     }
@@ -52,61 +42,72 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      const res = await api.post("/auth/login-siswa", {
+        nisn,
+      });
 
-      const res = await api.post(
-        "/auth/login-siswa",
-        {
-          nisn
-        }
-      );
-
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
-
-      localStorage.setItem(
-        "role",
-        res.data.role
-      );
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
 
       navigate("/siswa");
-
     } catch (err) {
       alert("NISN tidak ditemukan");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-700 via-blue-500 to-cyan-400 flex items-center justify-center px-4">
 
-      <div className="bg-white w-[420px] rounded-xl shadow-lg p-8">
+      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8">
 
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Sistem Klasifikasi Prestasi Akademik
-        </h1>
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img
+            src={logo}
+            alt="Logotutwuri"
+            className="w-24 h-24 object-contain"
+          />
+        </div>
 
-        <div className="flex gap-2 mb-6">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-slate-800">
+            Sistem Klasifikasi
+          </h1>
+
+          <h2 className="text-xl font-semibold text-blue-600">
+            Prestasi Akademik
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-2">
+            Metode Naive Bayes
+          </p>
+        </div>
+
+        {/* Tab Login */}
+        <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
 
           <button
             onClick={() => setMode("admin")}
-            className={`flex-1 py-2 rounded ${
+            className={`flex items-center justify-center gap-2 flex-1 py-3 rounded-lg font-medium transition-all ${
               mode === "admin"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200"
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-600"
             }`}
           >
+            <User size={18} />
             Guru/Admin
           </button>
 
           <button
             onClick={() => setMode("siswa")}
-            className={`flex-1 py-2 rounded ${
+            className={`flex items-center justify-center gap-2 flex-1 py-3 rounded-lg font-medium transition-all ${
               mode === "siswa"
-                ? "bg-green-600 text-white"
-                : "bg-gray-200"
+                ? "bg-green-600 text-white shadow"
+                : "text-gray-600"
             }`}
           >
+            <GraduationCap size={18} />
             Siswa
           </button>
 
@@ -115,50 +116,81 @@ export default function Login() {
         {mode === "admin" ? (
           <form onSubmit={handleLoginGuru}>
 
-            <input
-              type="text"
-              placeholder="Username"
-              className="w-full border rounded p-3 mb-3"
-              value={username}
-              onChange={(e) =>
-                setUsername(e.target.value)
-              }
-            />
+            <div className="relative mb-4">
+              <User
+                size={18}
+                className="absolute left-3 top-3.5 text-gray-400"
+              />
 
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full border rounded p-3 mb-4"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-            />
+              <input
+                type="text"
+                placeholder="Username"
+                className="w-full border border-gray-300 rounded-xl pl-10 p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                value={username}
+                onChange={(e) =>
+                  setUsername(e.target.value)
+                }
+              />
+            </div>
 
-            <button className="w-full bg-blue-600 text-white py-3 rounded">
-              Login Guru
+            <div className="relative mb-5">
+              <Lock
+                size={18}
+                className="absolute left-3 top-3.5 text-gray-400"
+              />
+
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full border border-gray-300 rounded-xl pl-10 p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl font-semibold"
+            >
+              Login Guru/Admin
             </button>
 
           </form>
         ) : (
           <form onSubmit={handleLoginSiswa}>
 
-            <input
-              type="text"
-              placeholder="Masukkan NISN"
-              className="w-full border rounded p-3 mb-4"
-              value={nisn}
-              onChange={(e) =>
-                setNisn(e.target.value)
-              }
-            />
+            <div className="relative mb-5">
+              <School
+                size={18}
+                className="absolute left-3 top-3.5 text-gray-400"
+              />
 
-            <button className="w-full bg-green-600 text-white py-3 rounded">
+              <input
+                type="text"
+                placeholder="Masukkan NISN"
+                className="w-full border border-gray-300 rounded-xl pl-10 p-3 focus:ring-2 focus:ring-green-500 outline-none"
+                value={nisn}
+                onChange={(e) =>
+                  setNisn(e.target.value)
+                }
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 transition text-white py-3 rounded-xl font-semibold"
+            >
               Masuk Sebagai Siswa
             </button>
 
           </form>
         )}
+
+        <div className="mt-6 text-center text-xs text-gray-500">
+          © 2026 Sistem Klasifikasi Prestasi Akademik
+        </div>
 
       </div>
 

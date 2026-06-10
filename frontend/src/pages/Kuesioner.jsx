@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ClipboardList,
+  User,
+  CheckCircle,
+} from "lucide-react";
 
 import api from "../services/api";
 
@@ -123,81 +128,122 @@ export default function Kuesioner() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-slate-100 p-8">
+return (
+  <div className="min-h-screen bg-slate-100 py-8 px-4">
 
-      <div className="max-w-5xl mx-auto">
+    <div className="max-w-4xl mx-auto">
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-lg p-8"
-        >
+      {/* Form */}
 
-          <h1 className="text-3xl font-bold mb-2">
-            Kuesioner Motivasi Belajar
-          </h1>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5"
+      >
 
-          <p className="text-gray-500 mb-8">
-            Nama : {siswa.nama}
-          </p>
+        {pertanyaan.map((item, index) => (
 
-          {pertanyaan.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500"
+          >
 
-            <div
-              key={index}
-              className="border-b py-5"
-            >
+            <h3 className="font-semibold text-lg mb-4">
 
-              <h3 className="font-medium mb-3">
-                {index + 1}. {item}
-              </h3>
+              {index + 1}. {item}
 
-              <select
-                name={`q${index + 1}`}
-                value={form[`q${index + 1}`]}
-                onChange={handleChange}
-                className="border rounded px-3 py-2 w-full"
-              >
-                <option value="0">
-                  Pilih Jawaban
-                </option>
+              <span className="text-red-500 ml-1">
+                *
+              </span>
 
-                <option value="5">
-                  Sangat Setuju
-                </option>
+            </h3>
 
-                <option value="4">
-                  Setuju
-                </option>
+            <div className="grid md:grid-cols-5 gap-3">
 
-                <option value="3">
-                  Netral
-                </option>
+              {[
+                {
+                  value: 5,
+                  label: "Sangat Setuju",
+                },
+                {
+                  value: 4,
+                  label: "Setuju",
+                },
+                {
+                  value: 3,
+                  label: "Netral",
+                },
+                {
+                  value: 2,
+                  label: "Tidak Setuju",
+                },
+                {
+                  value: 1,
+                  label:
+                    "Sangat Tidak Setuju",
+                },
+              ].map((opsi) => (
 
-                <option value="2">
-                  Tidak Setuju
-                </option>
+                <label
+                  key={opsi.value}
+                  className={`border rounded-xl p-3 cursor-pointer transition hover:border-blue-500 ${
+                    form[
+                      `q${index + 1}`
+                    ] === opsi.value
+                      ? "border-blue-600 bg-blue-50"
+                      : ""
+                  }`}
+                >
 
-                <option value="1">
-                  Sangat Tidak Setuju
-                </option>
-              </select>
+                  <input
+                    type="radio"
+                    name={`q${index + 1}`}
+                    value={opsi.value}
+                    checked={
+                      form[
+                        `q${index + 1}`
+                      ] === opsi.value
+                    }
+                    onChange={handleChange}
+                    className="mr-2"
+                  />
+
+                  {opsi.label}
+
+                </label>
+
+              ))}
 
             </div>
 
-          ))}
+          </div>
+
+        ))}
+
+        {/* Submit */}
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 flex justify-between items-center">
+
+          <div className="text-gray-500">
+
+            Pastikan semua pertanyaan
+            telah dijawab.
+
+          </div>
 
           <button
             type="submit"
-            className="mt-8 bg-blue-600 text-white px-8 py-3 rounded-lg"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl transition"
           >
+            <CheckCircle size={20} />
             Submit Kuesioner
           </button>
 
-        </form>
+        </div>
 
-      </div>
+      </form>
 
     </div>
-  );
+
+  </div>
+);
 }
