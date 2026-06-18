@@ -152,6 +152,7 @@ def hapus_siswa(
 
     if user:
         db.delete(user)
+        db.flush()
 
     db.delete(siswa)
 

@@ -17,6 +17,9 @@ export default function DataSiswa() {
   const [showTambah, setShowTambah] =
     useState(false);
 
+  const [importLoading, setImportLoading] =
+    useState(false);
+
   const [showEdit, setShowEdit] =
     useState(false);
 
@@ -183,6 +186,8 @@ export default function DataSiswa() {
     formData.append("file", selectedFile);
 
     try {
+      setImportLoading(true);
+
       const res = await api.post(
         "/siswa/import",
         formData,
@@ -202,6 +207,8 @@ export default function DataSiswa() {
       getData();
     } catch (error) {
       alert("Gagal import data");
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -766,9 +773,16 @@ export default function DataSiswa() {
 
                 <button
                   onClick={importExcel}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl"
+                  disabled={importLoading}
+                  className={`px-5 py-3 rounded-xl text-white ${
+                    importLoading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-emerald-600 hover:bg-emerald-700"
+                  }`}
                 >
-                  Import Data
+                  {importLoading
+                    ? "Mengimpor..."
+                    : "Import Data"}
                 </button>
 
               </div>
@@ -777,6 +791,27 @@ export default function DataSiswa() {
 
           </div>
 
+        </div>
+      )}
+
+      {importLoading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-md text-center shadow-2xl">
+
+            <div className="flex justify-center mb-5">
+              <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+
+            <h3 className="text-xl font-bold text-slate-800 mb-2">
+              Sedang Mengimpor Data
+            </h3>
+
+            <p className="text-slate-500">
+              Mohon tunggu sebentar, data siswa sedang diproses.
+              Jangan menutup halaman ini.
+            </p>
+
+          </div>
         </div>
       )}
 
