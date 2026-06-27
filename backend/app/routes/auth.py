@@ -66,7 +66,7 @@ def login(
 
 
 # ==========================
-# LOGIN SISWA (NISN SAJA)
+# LOGIN SISWA (NISN + PASSWORD)
 # ==========================
 @router.post("/login-siswa")
 def login_siswa(
@@ -81,8 +81,17 @@ def login_siswa(
 
     if not user:
         raise HTTPException(
-            status_code=404,
-            detail="NISN tidak ditemukan"
+            status_code=401,
+            detail="NISN atau Password salah"
+        )
+
+    if not verify_password(
+        request.password,
+        user.password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="NISN atau Password salah"
         )
 
     token = create_access_token(

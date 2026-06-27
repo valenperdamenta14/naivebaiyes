@@ -208,7 +208,7 @@ async def import_siswa(
 
         user = User(
             username=nisn,
-            password=hash_password(123456),
+            password=hash_password("123456"),
             role="siswa",
             siswa_id=siswa.id
         )
