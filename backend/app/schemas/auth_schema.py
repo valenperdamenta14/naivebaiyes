@@ -8,3 +8,4 @@ class LoginSchema(BaseModel):
 
 class LoginSiswaSchema(BaseModel):
     nisn: str
+    password: str

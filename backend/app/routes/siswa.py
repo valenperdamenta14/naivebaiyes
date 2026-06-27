@@ -3,14 +3,11 @@ from fastapi import UploadFile
 from fastapi import File
 from fastapi import Depends
 from fastapi import HTTPException
-
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-
 from app.models.siswa import Siswa
 from app.models.user import User
-
 from app.utils.security import hash_password
 
 import pandas as pd
@@ -68,7 +65,7 @@ def tambah_siswa(
 
     user = User(
         username=data["nisn"],
-        password=hash_password(data["nisn"]),
+        password=hash_password(data["123456"]),
         role="siswa",
         siswa_id=siswa.id
     )
@@ -211,7 +208,7 @@ async def import_siswa(
 
         user = User(
             username=nisn,
-            password=hash_password(nisn),
+            password=hash_password(123456),
             role="siswa",
             siswa_id=siswa.id
         )
